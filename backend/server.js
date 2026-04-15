@@ -213,12 +213,29 @@ app.get('/api/health', (req, res) => {
 
 // ── Serve frontend ───────────────────────────────────────────────────────────
 const fs = require('fs');
-const WALLET_PATH = path.resolve(__dirname, '..', 'wallet.html');
+const WALLET_PATH_PARENT = path.resolve(__dirname, '..', 'wallet.html');
+const WALLET_PATH_CURRENT = path.resolve(__dirname, 'wallet.html');
+
 app.get('/', (req, res) => {
-  fs.readFile(WALLET_PATH, (err, data) => {
-    if (err) return res.status(500).send('Could not load wallet.html');
-    res.setHeader('Content-Type', 'text/html');
-    res.end(data);
+  // Try parent directory first (for local development)
+  fs.readFile(WALLET_PATH_PARENT, (err, data) => {
+    if (err) {
+      console.log('⚠️ wallet.html not found in parent directory, trying current directory...');
+      // Try current directory (for Railway deployment)
+      fs.readFile(WALLET_PATH_CURRENT, (err2, data2) => {
+        if (err2) {
+          console.error('❌ Could not find wallet.html in either location');
+          console.error('   Tried:', WALLET_PATH_PARENT);
+          console.error('   Tried:', WALLET_PATH_CURRENT);
+          return res.status(500).send('Could not load wallet.html. Please check deployment configuration.');
+        }
+        res.setHeader('Content-Type', 'text/html');
+        res.end(data2);
+      });
+    } else {
+      res.setHeader('Content-Type', 'text/html');
+      res.end(data);
+    }
   });
 });
 
