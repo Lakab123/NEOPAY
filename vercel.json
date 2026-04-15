@@ -4,24 +4,19 @@
     {
       "src": "backend/server.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "wallet.html",
-      "use": "@vercel/static"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/backend/server.js"
+      "src": "/api/(.*)",
+      "dest": "/backend/server.js"
     },
     {
-      "source": "/wallet.html",
-      "destination": "/wallet.html"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/wallet.html"
+      "src": "/(.*)",
+      "dest": "/backend/server.js"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }

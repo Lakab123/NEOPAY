@@ -1276,12 +1276,24 @@
     // --- Auth Logic ---
     // --- API Setup ---
     // 🚀 DEPLOYMENT CONFIGURATION
-    // For local development: Use '/api/auth' (relative path)
-    // For Railway deployment: Your Railway URL
-    const RAILWAY_URL = 'https://desirable-courage-production-5a21.up.railway.app';
-    const USE_RAILWAY = true; // Set to true for production, false for local development
+    // Auto-detect deployment environment
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isVercel = window.location.hostname.includes('vercel.app');
+    const isRailway = window.location.hostname.includes('railway.app');
     
-    const API_BASE = USE_RAILWAY ? `${RAILWAY_URL}/api/auth` : '/api/auth';
+    // Set API base URL based on environment
+    let API_BASE;
+    if (isLocalhost) {
+        API_BASE = '/api/auth'; // Local development
+    } else if (isVercel) {
+        API_BASE = '/api/auth'; // Vercel (same domain)
+    } else if (isRailway) {
+        API_BASE = 'https://desirable-courage-production-5a21.up.railway.app/api/auth'; // Railway
+    } else {
+        API_BASE = '/api/auth'; // Default to relative path
+    }
+    
+    console.log('🚀 API Base URL:', API_BASE);
     let currentSignupEmail = '';
 
     // --- Screen Toggles ---
