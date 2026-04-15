@@ -1,0 +1,22 @@
+{
+  "name": "neopay-pro",
+  "version": "1.0.0",
+  "description": "NeoPay Pro Vercel Deployment",
+  "main": "backend/server.js",
+  "engines": {
+    "node": ">=18.x"
+  },
+  "scripts": {
+    "start": "node backend/server.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.0",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.3.3",
+    "nodemailer": "^8.0.4"
+  }
+}

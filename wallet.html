@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NeoPay Pro | Premium FinTech</title>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Branding Colors */
+            --primary: #1A365D; /* Navy Blue for Trust */
+            --primary-glow: rgba(26, 54, 93, 0.3);
+            --secondary: #0D9488; /* Elegant Teal */
+            --accent: #D4AF37; /* Gold accent */
+            --success: #059669;
+            
+            /* Dark Theme Variables (Default) */
+            --bg-base: #09090b;
+            --bg-surface: #18181b;
+            --bg-glass: rgba(24, 24, 27, 0.65);
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(255, 255, 255, 0.15);
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        body.light {
+            /* Light Theme Variables */
+            --bg-base: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-glass: rgba(255, 255, 255, 0.85);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-glass: rgba(0, 0, 0, 0.06);
+            --border-highlight: rgba(0, 0, 0, 0.15);
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: var(--bg-base);
+            color: var(--text-main);
+            display: flex; justify-content: center;
+            min-height: 100vh;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Mobile Container Simulation */
+        .app-container {
+            width: 100%; max-width: 414px; height: 100vh; position: relative;
+            background: var(--bg-surface); overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column;
+        }
+        body.light .app-container { box-shadow: 0 0 40px rgba(0,0,0,0.1); }
+
+        /* Ambient animated background glows */
+        .ambient-glow { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.6; z-index: 0; pointer-events: none; }
+        .glow-1 { top: -50px; left: -50px; width: 300px; height: 300px; background: rgba(79, 70, 229, 0.2); }
+        .glow-2 { bottom: 100px; right: -50px; width: 250px; height: 250px; background: rgba(6, 182, 212, 0.15); }
+        body.light .ambient-glow { opacity: 0.4; }
+
+        /* Generic Resets */
+        h2, h3 { font-weight: 700; }
+        p, span { line-height: 1.5; }
+
+        /* Header */
+        header {
+            padding: 50px 24px 20px; display: flex; justify-content: space-between; align-items: center;
+            position: relative; z-index: 20; background: transparent; transition: 0.3s;
+        }
+        .header-left { display: flex; align-items: center; gap: 14px; }
+        .profile-img-wrap {
+            width: 50px; height: 50px; border-radius: 16px; 
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 2px; position: relative; cursor: pointer;
+        }
+        .profile-img {
+            width: 100%; height: 100%; border-radius: 14px; border: 2px solid var(--bg-surface);
+            background: var(--bg-surface);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: 700; color: var(--text-main); text-transform: uppercase;
+        }
+        .header-title p { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+        .header-title h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        
+        .header-actions { display: flex; gap: 12px; }
+        .icon-btn {
+            width: 44px; height: 44px; border-radius: 14px; background: var(--bg-glass);
+            border: 1px solid var(--border-glass); display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: var(--text-main); cursor: pointer; backdrop-filter: blur(10px);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .icon-btn:hover { background: var(--border-highlight); transform: translateY(-2px); }
+        .icon-btn:active { transform: scale(0.95); }
+        .notification-dot { position: absolute; top: 12px; right: 12px; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; border: 2px solid var(--bg-surface); }
+
+        /* Page Layout Engine */
+        .page {
+            position: absolute; top: 120px; left: 0; right: 0; bottom: 0;
+            padding: 0 24px 120px; overflow-y: auto; overflow-x: hidden;
+            opacity: 0; pointer-events: none; transform: translateX(30px);
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 10;
+        }
+        .page.active { opacity: 1; pointer-events: auto; transform: translateX(0); z-index: 15; }
+        .page::-webkit-scrollbar { display: none; }
+
+        /* Premium Glass Card */
+        .glass-card {
+            width: 100%; min-height: 220px; border-radius: 30px; padding: 26px; color: white;
+            background: linear-gradient(120deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02)), linear-gradient(145deg, var(--primary), #0ea5e9);
+            box-shadow: 0 20px 40px var(--primary-glow); margin-bottom: 28px;
+            display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .glass-card::before {
+            content: ''; position: absolute; inset: 0; pointer-events: none;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIj48cGF0aCBkPSJNMCA1MCBDIDMwIDAsIDcwIDAsIDEwMCA1MCBMMTAwIDEwMCBMMCAxMDAgWiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPjwvc3ZnPg==') no-repeat bottom/cover;
+            opacity: 0.5; z-index: 1;
+        }
+        .glass-card * { position: relative; z-index: 2; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .card-chip { width: 42px; height: 30px; background: rgba(255,255,255,0.25); border-radius: 6px; border: 1px solid rgba(255,255,255,0.4); backdrop-filter: blur(5px); }
+        .card-brand { font-size: 24px; font-weight: 800; font-style: italic; opacity: 0.9; }
+        .card-middle { margin-top: 20px; }
+        .card-lbl { font-size: 13px; opacity: 0.8; font-weight: 500; margin-bottom: 4px; }
+        .card-bal { font-size: 38px; font-weight: 800; letter-spacing: -1px; }
+        .card-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; }
+        .card-num { font-size: 15px; letter-spacing: 3px; font-family: monospace; opacity: 0.9; }
+        .card-exp { font-size: 14px; font-weight: 500; opacity: 0.9; }
+
+        /* Action Grid */
+        .actions-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+        .action-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
+        .action-icon {
+            width: 60px; height: 60px; border-radius: 20px; background: var(--bg-surface);
+            border: 1px solid var(--border-glass); display: flex; align-items: center; justify-content: center;
+            font-size: 26px; color: var(--text-main); box-shadow: var(--shadow-sm); position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden;
+        }
+        .action-icon::before {
+            content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0; transition: 0.3s; z-index: 0;
+        }
+        .action-icon i { position: relative; z-index: 1; transition: 0.3s; }
+        .action-item:hover .action-icon { transform: translateY(-4px); border-color: transparent; box-shadow: var(--shadow-lg); }
+        .action-item:hover .action-icon::before { opacity: 1; }
+        .action-item:hover .action-icon i { color: white; }
+        .action-lbl { font-size: 13px; font-weight: 600; color: var(--text-muted); transition: 0.3s; }
+        .action-item:hover .action-lbl { color: var(--text-main); }
+
+        /* Notifications Panel */
+        .notifications-panel {
+            position: absolute; top: 65px; right: -5px; width: 320px;
+            background: var(--bg-surface); border: 1px solid var(--border-glass);
+            border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            z-index: 1000; display: none; flex-direction: column; opacity: 0; transform: translateY(-10px); transition: 0.3s;
+        }
+        .notifications-panel.active { display: flex; opacity: 1; transform: translateY(0); }
+        .np-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border-glass); }
+        .np-header h4 { font-weight: 700; font-size: 16px; margin: 0; }
+        .np-list { max-height: 350px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .np-item { background: var(--bg-glass); border-radius: 12px; padding: 12px; display: flex; gap: 12px; align-items: center; text-align: left; }
+        .np-item.success .np-icon { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .np-empty { padding: 20px; text-align: center; color: var(--text-muted); font-size: 14px; }
+        .np-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; background: rgba(79, 70, 229, 0.15); color: var(--primary); }
+        .np-content h5 { margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: var(--text-main); }
+        .np-content p { margin: 0; font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+        /* Section Heads */
+        .section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; }
+        .section-head h3 { font-size: 18px; font-weight: 700; }
+        .btn-text { font-size: 13px; color: var(--primary); font-weight: 600; cursor: pointer; background: none; border: none; font-family: 'Work Sans'; }
+
+        /* Transaction List */
+        .tx-list { display: flex; flex-direction: column; gap: 12px; }
+        .tx-card {
+            background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 20px;
+            padding: 16px; display: flex; align-items: center; gap: 16px; cursor: pointer;
+            transition: 0.2s;
+        }
+        .tx-card:active { transform: scale(0.98); background: var(--bg-glass); border-color: var(--border-highlight); }
+        .tx-icon-wrap { width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; background: var(--bg-glass); }
+        .tx-icons-apple { background: rgba(161, 161, 170, 0.1); color: var(--text-main); }
+        .tx-icons-food { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .tx-icons-income { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .tx-icons-sub { background: rgba(229, 9, 20, 0.1); color: #e50914; }
+        
+        .tx-info { flex: 1; }
+        .tx-name { font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+        .tx-category { font-size: 12px; color: var(--text-muted); }
+        .tx-amt-wrap { text-align: right; }
+        .tx-amt { font-weight: 700; font-size: 16px; }
+        .tx-amt.positive { color: var(--success); }
+        .tx-time { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+        /* Bottom Navigation Menu */
+        .nav-dock-wrap {
+            position: absolute; bottom: 0; left: 0; right: 0; padding: 0 24px 24px;
+            z-index: 50; display: flex; justify-content: center;
+        }
+        .nav-dock {
+            width: 100%; height: 76px; background: rgba(24, 24, 27, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass); border-radius: 28px;
+            display: flex; justify-content: space-around; align-items: center; padding: 0 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); position: relative;
+        }
+        body.light .nav-dock { background: rgba(255, 255, 255, 0.85); }
+        
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 60px; height: 60px; color: var(--text-muted); border-radius: 20px;
+            cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative;
+        }
+        .nav-item i { font-size: 26px; transition: 0.3s; margin-bottom: 2px; }
+        .nav-item span { font-size: 11px; font-weight: 600; opacity: 0; transform: translateY(8px); position: absolute; bottom: 6px; transition: 0.3s; }
+        
+        .nav-item:hover { color: var(--text-main); }
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active i { transform: translateY(-8px); }
+        .nav-item.active span { opacity: 1; transform: translateY(0); }
+
+        /* Floating Action Fab Middle */
+        .fab-btn-wrap { position: relative; margin-top: -35px; }
+        .fab-btn {
+            width: 64px; height: 64px; border-radius: 24px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: 4px solid var(--bg-base); display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 28px; box-shadow: 0 10px 25px var(--primary-glow);
+            cursor: pointer; transition: 0.3s; position: relative; z-index: 2;
+        }
+        .fab-btn:active { transform: scale(0.9); }
+        body.light .fab-btn { border-color: var(--bg-base); }
+
+        /* --- CARDS PAGE --- */
+        .card-management { display: flex; flex-direction: column; gap: 20px; align-items: center; }
+        .virtual-card-wrapper {
+            perspective: 1000px; width: 100%; height: 220px; margin-bottom: 10px; cursor: pointer;
+        }
+        .virtual-card-inner {
+            position: relative; width: 100%; height: 100%; text-align: left;
+            transition: transform 0.6s; transform-style: preserve-3d;
+        }
+        .virtual-card-wrapper.flipped .virtual-card-inner { transform: rotateY(180deg); }
+        .vc-face {
+            position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            border-radius: 30px; padding: 26px; color: white; box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        .vc-front {
+            background: linear-gradient(135deg, #27272a, #09090b); border: 1px solid rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .vc-back {
+            background: linear-gradient(135deg, #09090b, #27272a); border: 1px solid rgba(255,255,255,0.1);
+            transform: rotateY(180deg); display: flex; flex-direction: column; align-items: center; padding: 0 0 20px 0;
+        }
+        .vc-stripe { width: 100%; height: 45px; background: #000; margin-top: 30px; margin-bottom: 20px; }
+        .vc-cvv-strip { background: white; width: 80%; height: 35px; border-radius: 6px; display: flex; justify-content: flex-end; align-items: center; padding-right: 15px; color: #000; font-family: monospace; font-size: 16px; font-weight: bold; font-style: italic; }
+        .vc-cvv-label { width: 80%; text-align: right; font-size: 11px; margin-top: 5px; opacity: 0.6; }
+        
+        .toggle-setting {
+            width: 100%; background: var(--bg-surface); border: 1px solid var(--border-glass);
+            border-radius: 20px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .toggle-info i { font-size: 20px; color: var(--primary); margin-right: 12px; vertical-align: middle; }
+        .toggle-info span { font-size: 15px; font-weight: 600; }
+        
+        /* Modern Switch */
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-glass); border-radius: 34px; border: 1px solid var(--border-highlight); transition: .3s; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 3px; background-color: white; border-radius: 50%; transition: .3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: var(--primary); border-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* --- SEND PAGE --- */
+        .send-container { text-align: center; }
+        .contacts-scroll {
+            display: flex; gap: 16px; overflow-x: auto; padding: 10px 0 20px; margin-bottom: 10px;
+            scrollbar-width: none;
+        }
+        .contacts-scroll::-webkit-scrollbar { display: none; }
+        .contact-pill {
+            display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 68px; cursor: pointer;
+        }
+        .cp-img-wrap {
+            width: 60px; height: 60px; border-radius: 20px; padding: 3px;
+            background: var(--bg-glass); border: 1px solid var(--border-glass); transition: 0.3s;
+        }
+        .contact-pill:hover .cp-img-wrap { border-color: var(--primary); transform: translateY(-3px); }
+        .contact-pill.selected .cp-img-wrap { background: linear-gradient(135deg, var(--primary), var(--secondary)); border-color: transparent; }
+        .contact-pill.selected .cp-img { background: transparent; color: white; }
+        .cp-img { width: 100%; height: 100%; border-radius: 16px; object-fit: cover; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; background: var(--bg-surface); color: var(--text-main); }
+        .cp-name { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+        .contact-pill.selected .cp-name { color: var(--text-main); font-weight: 700; }
+
+        .cp-add { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 16px; background: var(--bg-surface); color: var(--text-main); font-size: 24px; }
+
+        .contacts-scroll.vertical-mode {
+            flex-direction: column; overflow-x: hidden; overflow-y: auto; max-height: 300px; padding: 10px;
+        }
+        .contacts-scroll.vertical-mode .contact-pill {
+            flex-direction: row; text-align: left; background: var(--bg-surface);
+            padding: 10px 14px; border-radius: 20px; border: 1px solid var(--border-glass);
+            width: 100%; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .contacts-scroll.vertical-mode .cp-img-wrap {
+            width: 44px; height: 44px; padding: 2px; flex-shrink: 0;
+        }
+        .contacts-scroll.vertical-mode .cp-name {
+            font-size: 15px; flex: 1; margin-left: 12px;
+        }
+        .contacts-scroll.vertical-mode .cp-acc {
+            display: block !important; font-size: 12px; color: var(--text-muted); font-weight: normal; margin-left: 12px; text-align: right;
+        }
+
+        .amount-display { margin: 30px 0 40px; }
+        .amt-currency { font-size: 30px; color: var(--text-muted); vertical-align: super; }
+        .amt-value { font-size: 64px; font-weight: 800; }
+        .amt-decimal { font-size: 30px; color: var(--text-muted); }
+        
+        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
+        .num-key {
+            height: 65px; border-radius: 20px; background: transparent; border: none;
+            color: var(--text-main); font-size: 28px; font-weight: 600; font-family: 'Work Sans';
+            cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center;
+        }
+        .num-key:active { background: var(--bg-glass); border: 1px solid var(--border-glass); transform: scale(0.9); }
+        
+        .btn-large {
+            width: 100%; padding: 22px; border-radius: 24px; border: none;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; font-family: 'Work Sans', sans-serif; font-size: 18px; font-weight: 700;
+            cursor: pointer; box-shadow: 0 10px 25px var(--primary-glow); transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-large:active { transform: scale(0.96); }
+
+        /* --- STATS PAGE --- */
+        .chart-card {
+            background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 24px;
+            padding: 24px; margin-bottom: 24px; display: flex; flex-direction: column; height: 250px;
+        }
+        .chart-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .chart-total { font-size: 24px; font-weight: 800; }
+        .chart-badge { background: rgba(16, 185, 129, 0.15); color: var(--success); padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        
+        .bars { display: flex; align-items: flex-end; justify-content: space-between; flex: 1; padding-bottom: 10px; }
+        .bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; height: 100%; justify-content: flex-end; }
+        .bar-track { width: 34px; background: var(--bg-glass); border-radius: 8px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding: 4px; }
+        .bar-fill { width: 100%; border-radius: 6px; background: var(--primary); transition: height 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .bar-wrap.active .bar-fill { background: linear-gradient(to top, var(--primary), var(--secondary)); }
+        .bar-wrap.active .bar-track { background: rgba(79, 70, 229, 0.1); }
+        .bar-day { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+        
+        .stats-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .sum-card { background: var(--bg-surface); border: 1px solid var(--border-glass); padding: 20px; border-radius: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .sum-icon { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+        .sum-card.income .sum-icon { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .sum-card.expense .sum-icon { background: rgba(244, 63, 94, 0.1); color: var(--accent); }
+        .sum-lbl { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+        .sum-val { font-size: 22px; font-weight: 700; }
+
+        /* --- PROFILE PAGE --- */
+        .profile-hdr { display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; text-align: center; }
+        .ph-img { width: 110px; height: 110px; border-radius: 35px; background: linear-gradient(135deg, var(--primary), var(--secondary)); margin-bottom: 16px; border: 4px solid var(--bg-surface); box-shadow: 0 15px 30px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: 800; color: white; text-transform: uppercase; }
+        .ph-name { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+        .ph-handle { font-size: 15px; color: var(--text-muted); font-weight: 500; }
+        .ph-badge { margin-top: 12px; background: rgba(6, 182, 212, 0.15); color: var(--secondary); padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+
+        .menu-list { display: flex; flex-direction: column; gap: 12px; }
+        .menu-item { background: var(--bg-surface); border: 1px solid var(--border-glass); padding: 18px 20px; border-radius: 20px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; }
+        .menu-item:hover { background: var(--bg-glass); border-color: var(--border-highlight); transform: translateX(4px); }
+        .menu-icon { width: 40px; height: 40px; border-radius: 12px; background: var(--bg-glass); display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 16px; color: var(--text-main); }
+        .menu-item.logout .menu-icon { background: rgba(244, 63, 94, 0.1); color: var(--accent); }
+        .menu-item.logout .menu-val { color: var(--accent); }
+        .menu-val { flex: 1; font-size: 15px; font-weight: 600; }
+        .menu-arr { color: var(--text-muted); font-size: 20px; }
+
+    
+        
+        /* Contact Search Bar */
+        .contact-search-wrap {
+            position: relative; margin-bottom: 20px; display: none;
+            opacity: 0; transform: translateY(-10px); transition: 0.3s;
+        }
+        .contact-search-wrap.active {
+            display: block; opacity: 1; transform: translateY(0);
+        }
+        .contact-search-input {
+            width: 100%; padding: 14px 14px 14px 44px; background: var(--bg-surface);
+            border: 1px solid var(--border-glass); border-radius: 16px;
+            color: var(--text-main); font-family: 'Work Sans'; font-size: 14px; outline: none; transition: 0.2s;
+        }
+        .contact-search-input:focus { border-color: var(--primary); }
+        .contact-search-icon {
+            position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted); font-size: 18px;
+        }
+        .contact-search-close {
+            position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted); font-size: 18px; cursor: pointer; display: none;
+        }
+        
+        .contact-pill.hidden { display: none !important; }
+
+        /* Modals & Overlays */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+            z-index: 1000; display: flex; align-items: flex-end; justify-content: center;
+            opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            width: 100%; max-width: 414px; background: var(--bg-surface);
+            border-radius: 30px 30px 0 0; padding: 30px 24px;
+            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative; border-top: 1px solid var(--border-highlight);
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-close {
+            position: absolute; top: 20px; right: 20px;
+            width: 32px; height: 32px; border-radius: 16px; background: var(--bg-glass);
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            font-size: 18px; color: var(--text-muted); border: 1px solid var(--border-glass);
+            transition: 0.2s;
+        }
+        .modal-close:hover { background: var(--border-highlight); }
+        .qr-box { background: white; padding: 20px; border-radius: 20px; display: inline-block; margin-bottom: 20px; }
+        .qr-box img { width: 150px; height: 150px; }
+        .addr-box { background: var(--bg-glass); border: 1px solid var(--border-glass); padding: 12px; border-radius: 12px; font-family: monospace; font-size: 13px; text-align: center; margin-bottom: 24px; }
+        
+        .mock-btn { width: 100%; padding: 18px; border-radius: 20px; border: none; background: var(--primary); color: white; font-weight: 700; font-family: 'Work Sans'; font-size: 16px; cursor: pointer; }
+        .mock-btn:active { transform: scale(0.96); }
+        
+        .scanner-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9); z-index: 2000; display: flex; flex-direction: column;
+            opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .scanner-overlay.active { opacity: 1; pointer-events: auto; }
+        .scan-frame { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+        .scan-box { width: 250px; height: 250px; border: 2px solid rgba(255,255,255,0.2); border-radius: 20px; position: relative; overflow: hidden; }
+        .scan-line { width: 100%; height: 2px; background: var(--success); position: absolute; box-shadow: 0 0 15px var(--success); animation: scan 2s linear infinite; }
+        @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        .modal-body-text { color: var(--text-muted); font-size: 15px; margin-bottom: 24px; text-align: center; line-height: 1.6; }
+
+    
+        /* Login Screen */
+        .login-page {
+            position: absolute; inset: 0; background: var(--bg-base);
+            z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 24px; transition: opacity 0.5s, transform 0.5s;
+        }
+        .login-page.hidden { opacity: 0; pointer-events: none; transform: translateY(-20px); }
+        .login-logo { width: 80px; height: 80px; border-radius: 20px; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 40px; color: white; margin-bottom: 24px; box-shadow: 0 10px 30px var(--primary-glow); }
+        .login-title { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+        .login-sub { color: var(--text-muted); font-size: 15px; margin-bottom: 40px; text-align: center; }
+        .login-form { width: 100%; display: flex; flex-direction: column; gap: 16px; }
+        .input-group { position: relative; }
+        .input-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--text-muted); }
+        .login-input { width: 100%; padding: 18px 18px 18px 48px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 16px; color: var(--text-main); font-family: 'Work Sans'; font-size: 15px; outline: none; transition: 0.2s; }
+        .login-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-glow); }
+        .login-btn { margin-top: 10px; width: 100%; padding: 18px; border-radius: 16px; border: none; background: var(--primary); color: white; font-weight: 700; font-family: 'Work Sans'; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .login-btn:active { transform: scale(0.96); }
+        .login-error { color: var(--accent); font-size: 13px; text-align: center; margin-top: 10px; display: none; }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: absolute; top: 0; left: -300px; bottom: 0; width: 280px;
+            background: var(--bg-surface); z-index: 2000;
+            box-shadow: var(--shadow-lg); transition: left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            display: flex; flex-direction: column; padding: 50px 24px 24px;
+        }
+        .sidebar.active { left: 0; }
+        .sidebar-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.5); z-index: 1900;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s; backdrop-filter: blur(4px);
+        }
+        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+        .sidebar-close {
+            position: absolute; top: 20px; right: 20px; width: 36px; height: 36px;
+            border-radius: 12px; background: var(--bg-glass); display: flex;
+            align-items: center; justify-content: center; cursor: pointer; font-size: 20px;
+        }
+        .sidebar-menu { display: flex; flex-direction: column; gap: 8px; margin-top: 40px; }
+        .sidebar-item {
+            display: flex; align-items: center; gap: 16px; padding: 16px;
+            border-radius: 16px; cursor: pointer; transition: 0.2s;
+            font-size: 15px; font-weight: 600; color: var(--text-muted);
+        }
+        .sidebar-item:hover { background: var(--bg-glass); color: var(--text-main); }
+        .sidebar-item.active { background: var(--primary-glow); color: var(--primary); }
+        .sidebar-item i { font-size: 22px; }
+
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    
+    <!-- LOGIN PAGE -->
+    <div id="login-screen" class="login-page">
+        <div class="login-logo"><i class="ph-fill ph-wallet"></i></div>
+        <h1 class="login-title">NeoPay Pro</h1>
+        <p class="login-sub">Secure completely frictionless payments</p>
+        
+        <form class="login-form" id="login-form" onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <i class="ph ph-user"></i>
+                <input type="text" id="username" class="login-input" placeholder="Username" required>
+            </div>
+            <div class="input-group">
+                <i class="ph ph-lock-key"></i>
+                <input type="password" id="password" class="login-input" placeholder="Password" required>
+            </div>
+            <p id="login-error-msg" class="login-error">Invalid credentials. Please try again.</p>
+            <button type="submit" class="login-btn">Secure Login</button>
+            <button type="button" class="login-btn" style="background: var(--bg-glass); color: var(--text-main); border: 1px solid var(--border-glass); margin-top: -6px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="handleBiometricLogin()">
+                <i class="ph ph-fingerprint" style="font-size: 20px;"></i> Fingerprint Login
+            </button>
+            <p style="text-align: center; margin-top: 15px; font-size: 14px; color: var(--text-muted);">
+                Don't have an account? <span style="color: var(--primary); cursor: pointer; font-weight: 600;" onclick="showSignupScreen()">Sign Up</span>
+            </p>
+        </form>
+    </div>
+
+    <!-- SIGNUP PAGE -->
+    <div id="signup-screen" class="login-page hidden">
+        <div class="login-logo"><i class="ph-fill ph-user-plus"></i></div>
+        <h1 class="login-title">Join NeoPay Pro</h1>
+        <p class="login-sub">Create your account to get started</p>
+        
+        <form class="login-form" id="signup-form" onsubmit="handleSignup(event)">
+            <div class="input-group">
+                <i class="ph ph-user"></i>
+                <input type="text" id="signup-username" class="login-input" placeholder="Username" required>
+            </div>
+            <div class="input-group">
+                <i class="ph ph-envelope"></i>
+                <input type="email" id="signup-email" class="login-input" placeholder="Email (Gmail)" required>
+            </div>
+            <div class="input-group">
+                <i class="ph ph-lock-key"></i>
+                <input type="password" id="signup-password" class="login-input" placeholder="Password" required>
+            </div>
+            <div class="input-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px; padding-left: 5px;">
+                <input type="checkbox" id="signup-biometric" style="width: 18px; height: 18px; accent-color: var(--primary);">
+                <label for="signup-biometric" style="color: var(--text-muted); font-size: 14px; cursor: pointer;">Enable Fingerprint Login</label>
+            </div>
+            <p id="signup-error-msg" class="login-error">Error signing up. Try again.</p>
+            <button type="submit" class="login-btn">Create Account</button>
+            <p style="text-align: center; margin-top: 15px; font-size: 14px; color: var(--text-muted);">
+                Already have an account? <span style="color: var(--primary); cursor: pointer; font-weight: 600;" onclick="showLoginScreen()">Login</span>
+            </p>
+        </form>
+    </div>
+
+    <!-- OTP PAGE -->
+    <div id="otp-screen" class="login-page hidden">
+        <div class="login-logo"><i class="ph-fill ph-envelope-open"></i></div>
+        <h1 class="login-title">Verify Email</h1>
+        <p class="login-sub">Enter the OTP sent to your Gmail</p>
+        
+        <form class="login-form" id="otp-form" onsubmit="handleOTP(event)">
+            <div class="input-group">
+                <i class="ph ph-key"></i>
+                <input type="text" id="otp-code" class="login-input" placeholder="Enter 6-digit OTP" required>
+            </div>
+            <p id="otp-error-msg" class="login-error">Invalid OTP. Please try again.</p>
+            <button type="submit" class="login-btn">Verify Account</button>
+            <p style="text-align: center; margin-top: 15px; font-size: 14px; color: var(--text-muted);">
+                <span style="color: var(--primary); cursor: pointer; font-weight: 600;" onclick="showLoginScreen()">Back to Login</span>
+            </p>
+        </form>
+    </div>
+
+    <!-- Sidebar Overlay & Menu -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-close" onclick="closeSidebar()"><i class="ph ph-x"></i></div>
+        <div class="login-logo" style="width: 50px; height: 50px; font-size: 24px; margin-bottom: 0;"><i class="ph-fill ph-wallet"></i></div>
+        <h2 style="font-size: 20px; margin-top: 16px;">NeoPay Pro</h2>
+        
+        <div class="sidebar-menu">
+            <div class="sidebar-item active" onclick="navTo('home'); closeSidebar()"><i class="ph-fill ph-house"></i> Home Dashboard</div>
+            <div class="sidebar-item" onclick="navTo('cards'); closeSidebar()"><i class="ph-fill ph-wallet"></i> My Cards</div>
+            <div class="sidebar-item" onclick="navTo('send'); closeSidebar()"><i class="ph-fill ph-paper-plane-right"></i> Transfer Funds</div>
+            <div class="sidebar-item" onclick="navTo('stats'); closeSidebar()"><i class="ph-fill ph-chart-pie-slice"></i> Analytics</div>
+            <div class="sidebar-item" onclick="navTo('profile'); closeSidebar()"><i class="ph-fill ph-user"></i> My Profile</div>
+            <div style="height: 1px; background: var(--border-glass); margin: 16px 0;"></div>
+            <div class="sidebar-item" onclick="navTo('help-center'); closeSidebar()"><i class="ph-fill ph-chat-circle-dots"></i> Help & Support</div>
+            <div class="sidebar-item" onclick="handleLogout(); closeSidebar()" style="color: var(--accent);"><i class="ph-fill ph-sign-out"></i> Sign Out</div>
+        </div>
+    </div>
+
+    <header id="main-header" style="opacity: 0; pointer-events: none;">
+        <div class="header-left">
+            <button class="icon-btn" style="margin-right: 5px;" onclick="openSidebar()">
+                <i class="ph ph-list"></i>
+            </button>
+            <div class="profile-img-wrap" onclick="navTo('profile')">
+                <div class="profile-img" id="user-initial-header">A</div>
+            </div>
+            <div class="header-title">
+                <p>Welcome back,</p>
+                <h1 id="user-name-header">Ahmad Yousaf</h1>
+            </div>
+        </div>
+        <div class="header-actions">
+            <!-- Theme Toggle -->
+            <button class="icon-btn" onclick="toggleTheme()">
+                <i class="ph ph-moon" id="theme-icon"></i>
+            </button>
+            <!-- Notifications -->
+            <button class="icon-btn" style="position: relative;" onclick="toggleNotifications(event)">
+                <i class="ph ph-bell"></i>
+                <div class="notification-dot" id="notif-badge" style="display: none;"></div>
+            </button>
+
+            <!-- Notifications Dropdown -->
+            <div id="notifications-panel" class="notifications-panel">
+                <div class="np-header">
+                    <h4>Notifications</h4>
+                    <span onclick="clearNotifications()" style="font-size:12px; color:var(--primary); cursor:pointer;">Clear All</span>
+                </div>
+                <div id="notifications-list" class="np-list">
+                    <div id="np-empty" class="np-empty">No new notifications</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- HOME PAGE -->
+    <div id="home" class="page">
+        <!-- Premium Card -->
+        <div class="glass-card">
+            <div class="card-top">
+                <div class="card-chip"></div>
+                <div class="card-brand"><i class="ph-fill ph-contactless-payment" style="font-size: 28px;"></i> VISA</div>
+            </div>
+            <div class="card-middle">
+                <p class="card-lbl">Total Balance</p>
+                <h2 class="card-bal" id="main-balance">$12,450.00</h2>
+            </div>
+            <div class="card-bottom">
+                <div class="card-num">•••• •••• •••• 8832</div>
+                <div class="card-exp">09/28</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="actions-grid">
+            <div class="action-item" onclick="navTo('send')">
+                <div class="action-icon"><i class="ph ph-paper-plane-right"></i></div>
+                <span class="action-lbl">Send</span>
+            </div>
+            <div class="action-item" onclick="showModal('receive-modal')">
+                <div class="action-icon"><i class="ph ph-download-simple"></i></div>
+                <span class="action-lbl">Request</span>
+            </div>
+            <div class="action-item" onclick="showModal('topup-modal')">
+                <div class="action-icon"><i class="ph ph-plus"></i></div>
+                <span class="action-lbl">Top up</span>
+            </div>
+            <div class="action-item" onclick="navTo('cards')">
+                <div class="action-icon"><i class="ph ph-credit-card"></i></div>
+                <span class="action-lbl">Cards</span>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="section-head">
+            <h3>Recent Activity</h3>
+            <button class="btn-text" onclick="showGeneric('All Transactions', 'A full list of all your transactions will load here.')">View all</button>
+        </div>
+        
+        <div class="tx-list">
+            <div class="tx-card" onclick="showReceipt(this.querySelector('.tx-name').innerText, this.querySelector('.tx-amt').innerText, this.querySelector('.tx-category').innerText, this.querySelector('.tx-time') ? this.querySelector('.tx-time').innerText : 'Just now', this.querySelector('.tx-icon-wrap').className, this.querySelector('.tx-icon-wrap').innerHTML)">
+                <div class="tx-icon-wrap tx-icons-apple"><i class="ph-fill ph-apple-logo"></i></div>
+                <div class="tx-info">
+                    <p class="tx-name">Apple Store</p>
+                    <p class="tx-category">Entertainment</p>
+                </div>
+                <div class="tx-amt-wrap">
+                    <p class="tx-amt">-$199.00</p>
+                    <p class="tx-time">Today, 10:23 AM</p>
+                </div>
+            </div>
+            <div class="tx-card" onclick="showReceipt(this.querySelector('.tx-name').innerText, this.querySelector('.tx-amt').innerText, this.querySelector('.tx-category').innerText, this.querySelector('.tx-time') ? this.querySelector('.tx-time').innerText : 'Just now', this.querySelector('.tx-icon-wrap').className, this.querySelector('.tx-icon-wrap').innerHTML)">
+                <div class="tx-icon-wrap tx-icons-food"><i class="ph-fill ph-hamburger"></i></div>
+                <div class="tx-info">
+                    <p class="tx-name">McDonald's</p>
+                    <p class="tx-category">Food & Drink</p>
+                </div>
+                <div class="tx-amt-wrap">
+                    <p class="tx-amt">-$24.50</p>
+                    <p class="tx-time">Yesterday, 8:40 PM</p>
+                </div>
+            </div>
+            <div class="tx-card" onclick="showReceipt(this.querySelector('.tx-name').innerText, this.querySelector('.tx-amt').innerText, this.querySelector('.tx-category').innerText, this.querySelector('.tx-time') ? this.querySelector('.tx-time').innerText : 'Just now', this.querySelector('.tx-icon-wrap').className, this.querySelector('.tx-icon-wrap').innerHTML)">
+                <div class="tx-icon-wrap tx-icons-income"><i class="ph-fill ph-briefcase"></i></div>
+                <div class="tx-info">
+                    <p class="tx-name">NeoTech Inc.</p>
+                    <p class="tx-category">Salary Deposit</p>
+                </div>
+                <div class="tx-amt-wrap">
+                    <p class="tx-amt positive">+$4,200.00</p>
+                    <p class="tx-time">Oct 24, 09:00 AM</p>
+                </div>
+            </div>
+            <div class="tx-card" onclick="showReceipt(this.querySelector('.tx-name').innerText, this.querySelector('.tx-amt').innerText, this.querySelector('.tx-category').innerText, this.querySelector('.tx-time') ? this.querySelector('.tx-time').innerText : 'Just now', this.querySelector('.tx-icon-wrap').className, this.querySelector('.tx-icon-wrap').innerHTML)">
+                <div class="tx-icon-wrap tx-icons-sub"><i class="ph-fill ph-play-circle"></i></div>
+                <div class="tx-info">
+                    <p class="tx-name">Netflix</p>
+                    <p class="tx-category">Subscription</p>
+                </div>
+                <div class="tx-amt-wrap">
+                    <p class="tx-amt">-$15.99</p>
+                    <p class="tx-time">Oct 20, 11:30 AM</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARDS PAGE -->
+    <div id="cards" class="page">
+        <div class="section-head" style="margin-bottom: 24px;">
+            <h3>My Cards</h3>
+            <button class="icon-btn" onclick="showModal('addcard-modal')" style="width: 36px; height: 36px; border-radius: 10px;"><i class="ph ph-plus"></i></button>
+        </div>
+        
+        <div class="card-management">
+            <!-- 3D Flip Card -->
+            <div class="virtual-card-wrapper" onclick="this.classList.toggle('flipped')">
+                <div class="virtual-card-inner">
+                    <!-- Front -->
+                    <div class="vc-face vc-front">
+                        <div class="card-top">
+                            <div class="card-brand" style="font-size: 18px; color: #a1a1aa;">Virtual</div>
+                            <div class="card-brand"><i class="ph-fill ph-mastercard-logo" style="font-size: 32px; color: #ff5f00;"></i></div>
+                        </div>
+                        <div class="card-num" style="font-size: 22px; margin-top: 30px;">4532 •••• •••• 9921</div>
+                        <div class="card-bottom">
+                            <div><p style="font-size:10px; opacity:0.6; text-transform:uppercase;">Card Holder</p><p id="user-name-card" style="font-size:14px; font-weight:600;">Ahmad Yousaf</p></div>
+                            <div><p style="font-size:10px; opacity:0.6; text-transform:uppercase;">Expires</p><p style="font-size:14px; font-weight:600;">12/26</p></div>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="vc-face vc-back">
+                        <div class="vc-stripe"></div>
+                        <div class="vc-cvv-strip">123</div>
+                        <div class="vc-cvv-label">CVV</div>
+                        <p style="font-size:10px; opacity:0.5; margin-top:15px; text-align:center; padding: 0 20px;">Use this card for safe online purchases. Never share your CVV.</p>
+                    </div>
+                </div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-top: -10px; margin-bottom: 10px;">Tap card to view details</p>
+
+            <div class="toggle-setting">
+                <div class="toggle-info"><i class="ph ph-lock-key"></i><span>Freeze Card</span></div>
+                <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+            </div>
+            <div class="toggle-setting">
+                <div class="toggle-info"><i class="ph ph-globe"></i><span>Online Payments</span></div>
+                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="toggle-setting">
+                <div class="toggle-info"><i class="ph ph-atm"></i><span>ATM Withdrawals</span></div>
+                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEND PAGE -->
+    <div id="send" class="page">
+        <h3 style="margin-bottom: 20px;">Send Money</h3>
+        
+                <div class="contact-search-wrap" id="contact-search-wrap">
+            <i class="ph ph-magnifying-glass contact-search-icon"></i>
+            <input type="text" id="contact-search" class="contact-search-input" placeholder="Name or Exact Account Number..." onkeyup="filterContacts()">
+            <i class="ph ph-x contact-search-close" id="contact-search-close" onclick="closeContactSearch()"></i>
+        </div>
+        
+        <!-- Recipient Row -->
+        <div class="contacts-scroll">
+            <div class="contact-pill" id="search-trigger-pill" onclick="openContactSearch()">
+                <div class="cp-img-wrap" style="pointer-events: none;"><div class="cp-add" style="pointer-events: none;"><i class="ph ph-magnifying-glass"></i></div></div>
+                <span class="cp-name" style="pointer-events: none;">Search</span>
+            </div>
+            <div class="contact-pill selected" onclick="selectContact(this)">
+                <div class="cp-img-wrap"><div class="cp-img">S</div></div>
+                <span class="cp-name">Sarah</span><span style="display:none;" class="cp-acc">neo8x123</span>
+            </div>
+            <div class="contact-pill" onclick="selectContact(this)">
+                <div class="cp-img-wrap"><div class="cp-img">M</div></div>
+                <span class="cp-name">Mike</span><span style="display:none;" class="cp-acc">neo8x456</span>
+            </div>
+            <div class="contact-pill" onclick="selectContact(this)">
+                <div class="cp-img-wrap"><div class="cp-img">D</div></div>
+                <span class="cp-name">David</span><span style="display:none;" class="cp-acc">neo8x789</span>
+            </div>
+            <div class="contact-pill" onclick="selectContact(this)">
+                <div class="cp-img-wrap"><div class="cp-img">E</div></div>
+                <span class="cp-name">Emma</span><span style="display:none;" class="cp-acc">neo8x012</span>
+            </div>
+            <div class="contact-pill" onclick="selectContact(this)">
+                <div class="cp-img-wrap"><div class="cp-img" style="background: var(--bg-glass);"><i class="ph ph-user-plus"></i></div></div>
+                <span class="cp-name">Another Person</span>
+            </div>
+        </div>
+
+        <!-- Transfer Details -->
+        <div id="transfer-details-section" style="margin-bottom: 20px; text-align: left; padding: 0 10px; display: none;">
+            <p style="font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px;">Transfer Method</p>
+            <select id="transfer-method" class="login-input" style="margin-bottom: 15px; width: 100%; border-radius: 16px; padding: 14px; background: var(--bg-surface); color: var(--text-main); border: 1px solid var(--border-glass);">
+                <option value="PSID">PSID</option>
+                <option value="Phone No">Phone No</option>
+                <option value="Easy Paisa">Easy Paisa</option>
+                <option value="Jazz Cash">Jazz Cash</option>
+            </select>
+            <input type="text" id="transfer-account" class="login-input" placeholder="Enter Account / PSID / Phone No..." style="width: 100%; border-radius: 16px; padding: 14px; background: var(--bg-surface); color: var(--text-main); border: 1px solid var(--border-glass);">
+        </div>
+
+        <!-- Amount -->
+        <div class="send-container">
+            <div class="amount-display">
+                <span class="amt-currency">$</span><span class="amt-value" id="amt-display">150</span><span class="amt-decimal">.00</span>
+            </div>
+            
+            <div class="numpad">
+                <button class="num-key" onclick="appendNum('1')">1</button>
+                <button class="num-key" onclick="appendNum('2')">2</button>
+                <button class="num-key" onclick="appendNum('3')">3</button>
+                <button class="num-key" onclick="appendNum('4')">4</button>
+                <button class="num-key" onclick="appendNum('5')">5</button>
+                <button class="num-key" onclick="appendNum('6')">6</button>
+                <button class="num-key" onclick="appendNum('7')">7</button>
+                <button class="num-key" onclick="appendNum('8')">8</button>
+                <button class="num-key" onclick="appendNum('9')">9</button>
+                <button class="num-key" style="font-size: 32px;">.</button>
+                <button class="num-key" onclick="appendNum('0')">0</button>
+                <button class="num-key" onclick="backspace()" style="font-size: 24px;"><i class="ph ph-backspace"></i></button>
+            </div>
+            
+            <button class="btn-large" onclick="mockSend()">Send Direct <i class="ph-bold ph-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- STATS PAGE -->
+    <div id="stats" class="page">
+        <h3 style="margin-bottom: 20px;">Analytics</h3>
+        
+        <div class="chart-card">
+            <div class="chart-header">
+                <div>
+                    <p style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Total Spent</p>
+                    <p class="chart-total">$2,450.00</p>
+                </div>
+                <div><span class="chart-badge"><i class="ph-bold ph-trend-down"></i> 12%</span></div>
+            </div>
+            
+            <div class="bars" id="bars-container">
+                <!-- Bars generated by JS for animation -->
+            </div>
+        </div>
+        
+        <div class="stats-summary">
+            <div class="sum-card income">
+                <div class="sum-icon"><i class="ph-fill ph-arrow-down-left"></i></div>
+                <div>
+                    <p class="sum-lbl">Total Income</p>
+                    <p class="sum-val">$4,200</p>
+                </div>
+            </div>
+            <div class="sum-card expense">
+                <div class="sum-icon"><i class="ph-fill ph-arrow-up-right"></i></div>
+                <div>
+                    <p class="sum-lbl">Total Expense</p>
+                    <p class="sum-val">$2,450</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-head">
+            <h3>Top Categories</h3>
+        </div>
+        <div class="tx-list">
+            <div class="tx-card" style="padding: 12px 16px;" onclick="showGeneric('Category Analysis', 'Detailed breakdown for ' + this.querySelector('.tx-name').innerText + ' is coming soon.')">
+                <div class="tx-icon-wrap tx-icons-food" style="width: 40px; height: 40px; font-size: 20px;"><i class="ph-fill ph-hamburger"></i></div>
+                <div class="tx-info"><p class="tx-name">Food & Drink</p></div>
+                <div class="tx-amt-wrap"><p class="tx-amt">$450.00</p></div>
+            </div>
+            <div class="tx-card" style="padding: 12px 16px;" onclick="showGeneric('Category Analysis', 'Detailed breakdown for ' + this.querySelector('.tx-name').innerText + ' is coming soon.')">
+                <div class="tx-icon-wrap tx-icons-sub" style="width: 40px; height: 40px; font-size: 20px;"><i class="ph-fill ph-airplane-tilt"></i></div>
+                <div class="tx-info"><p class="tx-name">Travel</p></div>
+                <div class="tx-amt-wrap"><p class="tx-amt">$320.00</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div id="profile" class="page">
+        <div class="profile-hdr">
+            <div class="ph-img" id="user-initial-profile">A</div>
+            <h2 class="ph-name" id="user-name-profile">Ahmad Yousaf</h2>
+            <p class="ph-handle" id="user-handle-profile">@ahmad_neo</p>
+            <div class="ph-badge"><i class="ph-fill ph-check-circle"></i> Verified Account</div>
+        </div>
+        
+        <div class="menu-list">
+            <div class="menu-item" onclick="navTo('personal-info')">
+                <div class="menu-icon"><i class="ph ph-user"></i></div>
+                <span class="menu-val">Personal Information</span>
+                <i class="ph ph-caret-right menu-arr"></i>
+            </div>
+            <div class="menu-item" onclick="navTo('security-privacy')">
+                <div class="menu-icon"><i class="ph ph-shield-check"></i></div>
+                <span class="menu-val">Security & Privacy</span>
+                <i class="ph ph-caret-right menu-arr"></i>
+            </div>
+            <div class="menu-item" onclick="showGeneric('Feature Under Development', 'This settings page will be available in the next version.')">
+                <div class="menu-icon"><i class="ph ph-gear"></i></div>
+                <span class="menu-val">App Settings</span>
+                <i class="ph ph-caret-right menu-arr"></i>
+            </div>
+            <div class="menu-item" onclick="navTo('help-center')">
+                <div class="menu-icon"><i class="ph ph-question"></i></div>
+                <span class="menu-val">Help Center</span>
+                <i class="ph ph-caret-right menu-arr"></i>
+            </div>
+            <div class="menu-item logout" onclick="handleLogout()">
+                <div class="menu-icon"><i class="ph ph-sign-out"></i></div>
+                <span class="menu-val">Log Out</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- PERSONAL INFO PAGE -->
+    <div id="personal-info" class="page">
+        <div class="section-head" style="margin-bottom: 24px; align-items: center; display: flex; gap: 16px;">
+            <button class="icon-btn" onclick="navTo('profile')" style="width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;"><i class="ph ph-arrow-left"></i></button>
+            <h3 style="flex: 1; margin: 0; font-size: 20px;">Personal Information</h3>
+        </div>
+        
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 24px; padding: 24px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: center; margin-bottom: 24px;">
+                <div class="ph-img" id="pi-user-initial" style="width: 90px; height: 90px; border-radius: 28px; font-size: 40px; margin-bottom: 0;">A</div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="input-group">
+                    <i class="ph ph-user"></i>
+                    <input type="text" id="pi-name" class="login-input" value="Ahmad Yousaf" readonly style="color: var(--text-muted); opacity: 0.8;">
+                </div>
+                <div class="input-group">
+                    <i class="ph ph-envelope"></i>
+                    <input type="email" id="pi-email" class="login-input" value="ahmad@example.com" readonly style="color: var(--text-muted); opacity: 0.8;">
+                </div>
+                <div class="input-group">
+                    <i class="ph ph-lock-key"></i>
+                    <input type="password" id="pi-password" class="login-input" value="********" readonly style="color: var(--text-muted); opacity: 0.8;">
+                </div>
+                
+                <button type="button" class="btn-large" onclick="showGeneric('Edit Information', 'Updating personal details is temporarily unavailable in this version.')" style="margin-top: 8px; padding: 18px; font-size: 16px; border-radius: 20px; background: var(--bg-glass); color: var(--text-main); border: 1px solid var(--border-glass); box-shadow: none;">
+                    <i class="ph ph-pencil-simple"></i> Edit Details
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECURITY AND PRIVACY PAGE -->
+    <div id="security-privacy" class="page">
+        <div class="section-head" style="margin-bottom: 24px; align-items: center; display: flex; gap: 16px;">
+            <button class="icon-btn" onclick="navTo('profile')" style="width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;"><i class="ph ph-arrow-left"></i></button>
+            <h3 style="flex: 1; margin: 0; font-size: 20px;">Security & Privacy</h3>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="toggle-setting" style="margin-bottom: 0;">
+                <div class="toggle-info"><i class="ph ph-fingerprint"></i><span>Biometric Login</span></div>
+                <label class="switch"><input type="checkbox" id="toggle-bio" checked><span class="slider"></span></label>
+            </div>
+            <div class="toggle-setting" style="margin-bottom: 0;">
+                <div class="toggle-info"><i class="ph ph-bell-ringing"></i><span>Login Alerts</span></div>
+                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            
+            <div class="menu-item" style="margin-top: 8px;" onclick="showGeneric('Change Password', 'Password change flow will be implemented soon.')">
+                <div class="menu-icon" style="background: rgba(79, 70, 229, 0.1); color: var(--primary);"><i class="ph-bold ph-key"></i></div>
+                <span class="menu-val">Change Password</span>
+                <i class="ph ph-caret-right menu-arr"></i>
+            </div>
+            <div class="menu-item" onclick="showGeneric('2FA Setup', 'Two-factor Authentication via Authenticator app is coming.')">
+                <div class="menu-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="ph-bold ph-device-mobile"></i></div>
+                <span class="menu-val">Two-Factor Auth</span>
+                <i class="ph ph-caret-right menu-arr"></i>
+            </div>
+            <div class="menu-item" onclick="showGeneric('Connected Devices', 'Manage devices that have access to your account.')">
+                <div class="menu-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"><i class="ph-bold ph-devices"></i></div>
+                <span class="menu-val">Connected Devices</span>
+                <i class="ph ph-caret-right menu-arr"></i>
+            </div>
+            
+            <div class="menu-item" style="margin-top: 16px; border: 1px solid rgba(244, 63, 94, 0.3);" onclick="showGeneric('Delete Account', 'Warning: Deleting your account is permanent.')">
+                <div class="menu-icon" style="background: rgba(244, 63, 94, 0.1); color: var(--accent);"><i class="ph-bold ph-trash"></i></div>
+                <span class="menu-val" style="color: var(--accent);">Delete Account</span>
+                <i class="ph ph-caret-right menu-arr"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- HELP CENTER PAGE -->
+    <div id="help-center" class="page">
+        <div class="section-head" style="margin-bottom: 24px; align-items: center; display: flex; gap: 16px;">
+            <button class="icon-btn" onclick="navTo('profile')" style="width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;"><i class="ph ph-arrow-left"></i></button>
+            <h3 style="flex: 1; margin: 0; font-size: 20px;">Help Center</h3>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            <h4 style="font-size: 14px; color: var(--text-muted); margin-bottom: -8px;">Frequently Asked Questions</h4>
+            
+            <div class="menu-item" style="flex-direction: column; align-items: flex-start; padding: 16px;" onclick="this.classList.toggle('expanded')">
+                <div style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
+                    <span style="font-weight: 600; font-size: 14px;">How do I transfer money?</span>
+                    <i class="ph ph-caret-down"></i>
+                </div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px; display: none;" class="faq-content">To transfer money, go to the Transfer tab, enter the recipient's details (PSID, Phone, etc.), and enter the amount.</p>
+            </div>
+            
+            <div class="menu-item" style="flex-direction: column; align-items: flex-start; padding: 16px;" onclick="this.classList.toggle('expanded')">
+                <div style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
+                    <span style="font-weight: 600; font-size: 14px;">How to reset my password?</span>
+                    <i class="ph ph-caret-down"></i>
+                </div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px; display: none;" class="faq-content">Go to Security & Privacy settings and select Change Password.</p>
+            </div>
+            
+            <div class="menu-item" style="flex-direction: column; align-items: flex-start; padding: 16px;" onclick="this.classList.toggle('expanded')">
+                <div style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
+                    <span style="font-weight: 600; font-size: 14px;">Are my funds secure?</span>
+                    <i class="ph ph-caret-down"></i>
+                </div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px; display: none;" class="faq-content">Yes, your funds are secured with bank-grade encryption and optional two-factor authentication.</p>
+            </div>
+
+            <h4 style="font-size: 14px; color: var(--text-muted); margin-top: 16px; margin-bottom: -8px;">Need more help?</h4>
+
+            <div class="menu-item" onclick="navTo('ai-chatbot')">
+                <div class="menu-icon" style="background: rgba(79, 70, 229, 0.1); color: var(--primary);"><i class="ph-bold ph-robot"></i></div>
+                <span class="menu-val">AI Support Agent</span>
+                <i class="ph ph-caret-right menu-arr"></i>
+            </div>
+
+            <div class="menu-item" onclick="navTo('contact-us')">
+                <div class="menu-icon" style="background: rgba(14, 165, 233, 0.1); color: #0ea5e9;"><i class="ph-bold ph-headset"></i></div>
+                <span class="menu-val">Contact Us</span>
+                <i class="ph ph-caret-right menu-arr"></i>
+            </div>
+        </div>
+        <style>
+            .menu-item.expanded .ph-caret-down { transform: rotate(180deg); }
+            .menu-item.expanded .faq-content { display: block !important; }
+        </style>
+    </div>
+
+    <!-- CONTACT US PAGE -->
+    <div id="contact-us" class="page">
+        <div class="section-head" style="margin-bottom: 24px; align-items: center; display: flex; gap: 16px;">
+            <button class="icon-btn" onclick="navTo('help-center')" style="width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;"><i class="ph ph-arrow-left"></i></button>
+            <h3 style="flex: 1; margin: 0; font-size: 20px;">Contact Us</h3>
+        </div>
+
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 24px; padding: 24px; margin-bottom: 24px;">
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">Describe your issue below and our support team will get back to you via email within 24 hours.</p>
+            
+            <form onsubmit="event.preventDefault(); showGeneric('Message Sent', 'Your query has been submitted to our support team.'); navTo('help-center');" style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="input-group">
+                    <i class="ph ph-list"></i>
+                    <select class="login-input" style="padding-left: 48px; width: 100%;" required>
+                        <option value="" disabled selected>Select Category</option>
+                        <option value="transaction">Transaction Issue</option>
+                        <option value="account">Account Access</option>
+                        <option value="card">Card Management</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="input-group" style="position: relative;">
+                    <i class="ph ph-chat-text" style="position: absolute; top: 18px; transform: none;"></i>
+                    <textarea class="login-input" placeholder="Type your message here..." rows="5" style="resize: none; padding-left: 48px; border-radius: 16px;" required></textarea>
+                </div>
+                
+                <button type="submit" class="btn-large" style="margin-top: 8px; padding: 18px; font-size: 16px; border-radius: 20px;">
+                    Send Message
+                </button>
+            </form>
+        </div>
+        
+        <div class="stats-summary" style="grid-template-columns: 1fr;">
+             <div class="sum-card" onclick="window.location.href='mailto:support@neopay.test'" style="cursor: pointer; align-items: center; flex-direction: row;">
+                <div class="sum-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="ph-fill ph-envelope"></i></div>
+                <div>
+                    <p class="sum-lbl">Email Support</p>
+                    <p class="sum-val" style="font-size: 15px;">support@neopay.test</p>
+                </div>
+            </div>
+            <div class="sum-card" onclick="window.location.href='tel:+18001234567'" style="cursor: pointer; align-items: center; flex-direction: row;">
+                <div class="sum-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"><i class="ph-fill ph-phone"></i></div>
+                <div>
+                    <p class="sum-lbl">Call Us (24/7)</p>
+                    <p class="sum-val" style="font-size: 15px;">+1-800-123-4567</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI CHATBOT PAGE -->
+    <div id="ai-chatbot" class="page" style="display: flex; flex-direction: column;">
+        <div class="section-head" style="margin-bottom: 24px; align-items: center; display: flex; gap: 16px; flex-shrink: 0;">
+            <button class="icon-btn" onclick="navTo('help-center')" style="width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;"><i class="ph ph-arrow-left"></i></button>
+            <div style="flex: 1; display: flex; align-items: center; gap: 12px;">
+                <div class="ph-img" style="width: 40px; height: 40px; border-radius: 12px; font-size: 20px; margin: 0; padding: 0;"><i class="ph-fill ph-robot"></i></div>
+                <div>
+                    <h3 style="margin: 0; font-size: 16px;">Neo AI Agent</h3>
+                    <p style="font-size: 11px; color: var(--success); font-weight: 600; display: flex; align-items: center; gap: 4px;"><span style="width:6px; height:6px; background:var(--success); border-radius:50%; display:inline-block;"></span> Online</p>
+                </div>
+            </div>
+            <button class="icon-btn" style="width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;" onclick="clearChat()"><i class="ph ph-trash"></i></button>
+        </div>
+
+        <div id="chat-messages" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding-bottom: 20px; scrollbar-width: none;">
+            <div class="chat-bubble bot" style="background: var(--bg-surface); border: 1px solid var(--border-glass); padding: 14px 18px; border-radius: 20px 20px 20px 4px; align-self: flex-start; max-width: 85%; line-height: 1.5; font-size: 14px;">
+                Hello! I am your NeoPay AI Assistant. I can help answer questions about your account, transactions, and security. How can I help you today?
+            </div>
+        </div>
+        
+        <form onsubmit="event.preventDefault(); sendChatMessage();" style="display: flex; gap: 10px; margin-top: auto; padding-top: 10px; flex-shrink: 0; position: sticky; bottom: 0; background: var(--bg-base);">
+            <input type="text" id="chat-input" class="login-input" placeholder="Type your message..." style="border-radius: 24px; padding: 16px 20px; flex: 1;" required autocomplete="off">
+            <button type="submit" class="fab-btn" style="width: 52px; height: 52px; border-radius: 20px; flex-shrink: 0; margin: 0; border: none; font-size: 20px;"><i class="ph-bold ph-paper-plane-right"></i></button>
+        </form>
+    </div>
+
+    <!-- Bottom Navigation Dock -->
+    <div class="nav-dock-wrap" id="nav-wrapper" style="opacity: 0; pointer-events: none; transition: opacity 0.4s;">
+        <nav class="nav-dock">
+            <div class="nav-item active" onclick="navTo('home', this)">
+                <i class="ph-fill ph-house"></i><span>Home</span>
+            </div>
+            <div class="nav-item" onclick="navTo('cards', this)">
+                <i class="ph-fill ph-wallet"></i><span>Cards</span>
+            </div>
+            
+            <div class="fab-btn-wrap">
+                <div class="fab-btn" onclick="showScanner()"><i class="ph ph-scan"></i></div>
+            </div>
+            
+            <div class="nav-item" onclick="navTo('stats', this)">
+                <i class="ph-fill ph-chart-pie-slice"></i><span>Stats</span>
+            </div>
+            <div class="nav-item" onclick="navTo('profile', this)">
+                <i class="ph-fill ph-user"></i><span>Profile</span>
+            </div>
+        </nav>
+    </div>
+
+
+    <!-- Receive QR Modal -->
+    <div class="modal-overlay" id="receive-modal" onclick="closeModal(this, event)">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeModalBtn('receive-modal')"><i class="ph ph-x"></i></div>
+            <h3 style="text-align: center; margin-bottom: 8px;">Receive Funds</h3>
+            <p style="text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">Scan the QR code to receive payments securely.</p>
+            <div style="text-align: center;"><div class="qr-box"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=neopay:ahmad_neo" alt="QR Code"></div></div>
+            <div class="addr-box">neo8x...3f9a</div>
+            <button class="mock-btn" onclick="closeModalBtn('receive-modal'); showGeneric('Copied', 'Wallet address copied to clipboard!')">Copy Address</button>
+        </div>
+    </div>
+
+    <!-- Top Up Modal -->
+    <div class="modal-overlay" id="topup-modal" onclick="closeModal(this, event)">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeModalBtn('topup-modal')"><i class="ph ph-x"></i></div>
+            <h3 style="text-align: center; margin-bottom: 24px;">Top Up Wallet</h3>
+            <div class="tx-card" style="margin-bottom: 12px;" onclick="closeModalBtn('topup-modal'); showGeneric('Bank Transfer', 'Connecting to your bank securely...')">
+                <div class="tx-icon-wrap" style="background: rgba(79, 70, 229, 0.1); color: var(--primary);"><i class="ph-fill ph-bank"></i></div>
+                <div class="tx-info"><p class="tx-name">Bank Transfer</p><p class="tx-category">Instant deposit</p></div>
+                <i class="ph ph-caret-right"></i>
+            </div>
+            <div class="tx-card" style="margin-bottom: 24px;" onclick="closeModalBtn('topup-modal'); showGeneric('Debit Card', 'Entering new card flow...')">
+                <div class="tx-icon-wrap" style="background: rgba(6, 182, 212, 0.1); color: var(--secondary);"><i class="ph-fill ph-credit-card"></i></div>
+                <div class="tx-info"><p class="tx-name">Debit Card</p><p class="tx-category">2.5% fee applied</p></div>
+                <i class="ph ph-caret-right"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div class="modal-overlay" id="receipt-modal" onclick="closeModal(this, event)">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeModalBtn('receipt-modal')"><i class="ph ph-x"></i></div>
+            <h3 style="text-align: center; margin-bottom: 24px;">Transaction Detail</h3>
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div id="receipt-icon-wrap" style="width: 60px; height: 60px; border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 30px; margin-bottom: 12px; border: 1px solid var(--border-glass);"></div>
+                <h2 id="receipt-amt" style="font-size: 32px; font-weight: 800; margin-bottom: 4px;"></h2>
+                <p id="receipt-name" style="font-weight: 600; font-size: 16px;"></p>
+                <p id="receipt-time" style="font-size: 13px; color: var(--text-muted);"></p>
+            </div>
+            <div style="background: var(--bg-surface); border: 1px dashed var(--border-highlight); border-radius: 16px; padding: 16px; margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;"><span style="color:var(--text-muted); font-size:14px;">Status</span><span style="color:var(--success); font-weight:600; font-size:14px;">Completed</span></div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;"><span style="color:var(--text-muted); font-size:14px;">Ref Number</span><span style="font-family:monospace; font-size:14px;">#TRX-993821</span></div>
+                <div style="display: flex; justify-content: space-between;"><span style="color:var(--text-muted); font-size:14px;">Category</span><span id="receipt-cat" style="font-size:14px; font-weight:500;"></span></div>
+            </div>
+            <button class="mock-btn" style="background: var(--bg-glass); color: var(--text-main); border: 1px solid var(--border-glass);" onclick="closeModalBtn('receipt-modal')">Report an Issue</button>
+        </div>
+    </div>
+
+    <!-- Generic Modal -->
+    <div class="modal-overlay" id="generic-modal" onclick="closeModal(this, event)">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeModalBtn('generic-modal')"><i class="ph ph-x"></i></div>
+            <h3 id="generic-title" style="text-align: center; margin-bottom: 24px;">Notification</h3>
+            <p id="generic-body" class="modal-body-text">This feature is fully simulated.</p>
+            <button class="mock-btn" onclick="closeModalBtn('generic-modal')">Okay</button>
+        </div>
+    </div>
+    
+    <!-- Add Card Modal -->
+    <div class="modal-overlay" id="addcard-modal" onclick="closeModal(this, event)">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeModalBtn('addcard-modal')"><i class="ph ph-x"></i></div>
+            <h3 style="text-align: center; margin-bottom: 24px;">Add New Card</h3>
+            <p class="modal-body-text">Select card type to proceed.</p>
+            <div class="tx-card" style="margin-bottom: 12px;" onclick="closeModalBtn('addcard-modal'); showGeneric('Virtual Card', 'Generating a new Virtual Card for safe online shopping...')">
+                <div class="tx-icon-wrap" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="ph-fill ph-credit-card"></i></div>
+                <div class="tx-info"><p class="tx-name">Virtual Card</p><p class="tx-category">Ready instantly</p></div>
+                <i class="ph ph-caret-right"></i>
+            </div>
+            <div class="tx-card" style="margin-bottom: 24px;" onclick="closeModalBtn('addcard-modal'); showGeneric('Physical Card', 'Initiating application for physical card delivery.')">
+                <div class="tx-icon-wrap" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"><i class="ph-fill ph-cardholder"></i></div>
+                <div class="tx-info"><p class="tx-name">Physical Card</p><p class="tx-category">Ships in 3-5 days</p></div>
+                <i class="ph ph-caret-right"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scanner Overlay -->
+    <div class="scanner-overlay" id="scanner-overlay">
+        <div class="scanner-header" style="padding: 50px 24px; display: flex; justify-content: space-between; color: white;">
+            <div class="icon-btn" onclick="closeScanner()" style="border-color: rgba(255,255,255,0.2);"><i class="ph ph-x"></i></div>
+            <div style="font-size: 18px; font-weight: 600; padding: 10px;">Scan QR</div>
+            <div class="icon-btn" style="border-color: rgba(255,255,255,0.2);" onclick="alert('Flash toggled')"><i class="ph ph-flashlight"></i></div>
+        </div>
+        <div class="scan-frame">
+            <div class="scan-box"><div class="scan-line"></div></div>
+        </div>
+        <p style="text-align: center; color: white; opacity: 0.8; margin-bottom: 50px;">Align QR code within frame <br> to send funds automatically</p>
+    </div>
+
+</div>
+
+<script>
+
+    // --- Auth Logic ---
+    // --- API Setup ---
+    const API_BASE = '/api/auth';
+    let currentSignupEmail = '';
+
+    // --- Screen Toggles ---
+    function showSignupScreen() {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('otp-screen').classList.add('hidden');
+        document.getElementById('signup-screen').classList.remove('hidden');
+    }
+
+    function showLoginScreen() {
+        document.getElementById('signup-screen').classList.add('hidden');
+        document.getElementById('otp-screen').classList.add('hidden');
+        document.getElementById('login-screen').classList.remove('hidden');
+    }
+
+    function showOTPScreen() {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('signup-screen').classList.add('hidden');
+        document.getElementById('otp-screen').classList.remove('hidden');
+    }
+
+    // --- Auth Logic ---
+    function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    async function handleSignup(e) {
+        e.preventDefault();
+        const user = document.getElementById('signup-username').value;
+        const email = document.getElementById('signup-email').value;
+        const pass = document.getElementById('signup-password').value;
+        const enableBio = document.getElementById('signup-biometric').checked;
+        const err = document.getElementById('signup-error-msg');
+        
+        let biometricKey = null;
+        if (enableBio) {
+            biometricKey = generateUUID();
+            localStorage.setItem('neo_biometric_key', biometricKey);
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/signup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user, email, password: pass, biometricKey })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                err.style.display = 'none';
+                currentSignupEmail = email; // Save for OTP verification
+                showOTPScreen();
+                alert(data.message); // Nice simple alert for OTP sent
+            } else {
+                err.innerText = data.message;
+                err.style.display = 'block';
+            }
+        } catch (error) {
+            err.innerText = 'Server error. Is the backend running?';
+            err.style.display = 'block';
+        }
+    }
+
+    async function handleOTP(e) {
+        e.preventDefault();
+        const otp = document.getElementById('otp-code').value;
+        const err = document.getElementById('otp-error-msg');
+        
+        try {
+            const res = await fetch(`${API_BASE}/verify-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: currentSignupEmail, otp })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                err.style.display = 'none';
+                alert(data.message);
+                showLoginScreen();
+            } else {
+                err.innerText = data.message;
+                err.style.display = 'block';
+            }
+        } catch (error) {
+            err.innerText = 'Server error. Is the backend running?';
+            err.style.display = 'block';
+        }
+    }
+
+    async function handleBiometricLogin() {
+        const biometricKey = localStorage.getItem('neo_biometric_key');
+        const err = document.getElementById('login-error-msg');
+        
+        if (!biometricKey) {
+            err.innerText = 'No fingerprint setup on this device.';
+            err.style.display = 'block';
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ biometricKey })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                err.style.display = 'none';
+                loginSuccessUI(data);
+            } else {
+                err.innerText = data.message;
+                err.style.display = 'block';
+            }
+        } catch (error) {
+            err.innerText = 'Server error. Is the backend running?';
+            err.style.display = 'block';
+        }
+    }
+
+    function loginSuccessUI(data) {
+        // Set Dynamic User Info
+        document.getElementById('user-name-header').innerText = data.username;
+        document.getElementById('user-name-card').innerText = data.username;
+        document.getElementById('user-name-profile').innerText = data.username;
+        
+        // Generate Handle
+        const handle = "@" + data.username.toLowerCase().replace(/\s+/g, '_');
+        document.getElementById('user-handle-profile').innerText = handle;
+        
+        // Generate Initials
+        const initial = data.username.charAt(0).toUpperCase();
+        document.getElementById('user-initial-header').innerText = initial;
+        document.getElementById('user-initial-profile').innerText = initial;
+        
+        // Populate Personal Info Page
+        const piNameEl = document.getElementById('pi-name');
+        if(piNameEl) piNameEl.value = data.username;
+        const piEmailEl = document.getElementById('pi-email');
+        if(piEmailEl && data.email) piEmailEl.value = data.email;
+        const piInitialEl = document.getElementById('pi-user-initial');
+        if(piInitialEl) piInitialEl.innerText = initial;
+
+        // Hide login screen
+        document.getElementById('login-screen').classList.add('hidden');
+        // Show Home & Chrome
+        setTimeout(() => {
+            document.getElementById('main-header').style.opacity = '1';
+            document.getElementById('main-header').style.pointerEvents = 'auto';
+            document.getElementById('nav-wrapper').style.opacity = '1';
+            document.getElementById('nav-wrapper').style.pointerEvents = 'auto';
+            navTo('home', document.querySelector('.nav-item')); // Show home with first nav active
+        }, 300);
+    }
+
+    async function handleLogin(e) {
+        e.preventDefault();
+        const user = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
+        const err = document.getElementById('login-error-msg');
+        
+        try {
+            const res = await fetch(`${API_BASE}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user, password: pass })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                err.style.display = 'none';
+                loginSuccessUI(data);
+            } else {
+                err.innerText = data.message;
+                err.style.display = 'block';
+            }
+        } catch (error) {
+            err.innerText = 'Server error. Is the backend running?';
+            err.style.display = 'block';
+        }
+    }
+
+    function handleLogout() {
+        // Reset state
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        
+        // Hide Pages and Chrome
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById('main-header').style.opacity = '0';
+        document.getElementById('main-header').style.pointerEvents = 'none';
+        document.getElementById('nav-wrapper').style.opacity = '0';
+        document.getElementById('nav-wrapper').style.pointerEvents = 'none';
+        
+        // Show login screen
+        setTimeout(() => {
+            document.getElementById('login-screen').classList.remove('hidden');
+        }, 300);
+    }
+
+
+    
+    // Contacts Search Logic
+    function openContactSearch() {
+        const wrap = document.getElementById('contact-search-wrap');
+        const input = document.getElementById('contact-search');
+        document.getElementById('search-trigger-pill').style.display = 'none';
+        wrap.style.display = 'block';
+        setTimeout(() => { wrap.classList.add('active'); input.focus(); }, 10);
+    }
+
+    function closeContactSearch() {
+        const wrap = document.getElementById('contact-search-wrap');
+        const input = document.getElementById('contact-search');
+        wrap.classList.remove('active');
+        setTimeout(() => {
+            wrap.style.display = 'none';
+            document.getElementById('search-trigger-pill').style.display = 'flex';
+            input.value = '';
+            filterContacts(); // reset filter
+        }, 300);
+    }
+
+    function selectContact(element) {
+        document.querySelectorAll('.contact-pill').forEach(p => p.classList.remove('selected'));
+        element.classList.add('selected');
+        
+        const pillName = element.querySelector('.cp-name').innerText;
+        const transferSection = document.getElementById('transfer-details-section');
+        
+        if (pillName === 'Another Person') {
+            transferSection.style.display = 'block';
+        } else {
+            transferSection.style.display = 'none';
+        }
+    }
+
+    let searchDebounceTimeout;
+    async function filterContacts() {
+        const input = document.getElementById('contact-search');
+        const closeBtn = document.getElementById('contact-search-close');
+        const query = input.value.trim();
+        const scrollContainer = document.querySelector('.contacts-scroll');
+        
+        closeBtn.style.display = query.length > 0 ? 'block' : 'none';
+
+        if (query.length < 2) {
+            // Restore default pills
+            scrollContainer.classList.remove('vertical-mode');
+            document.querySelectorAll('.contacts-scroll .dynamic-pill').forEach(el => el.remove());
+            document.querySelectorAll('.contacts-scroll .contact-pill:not(.dynamic-pill)').forEach(p => p.classList.remove('hidden'));
+            return;
+        }
+
+        clearTimeout(searchDebounceTimeout);
+        searchDebounceTimeout = setTimeout(async () => {
+            try {
+                const res = await fetch(`${API_BASE.replace('/auth', '/users')}/search?q=${encodeURIComponent(query)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    scrollContainer.classList.add('vertical-mode');
+                    document.querySelectorAll('.contacts-scroll .dynamic-pill').forEach(el => el.remove());
+                    document.querySelectorAll('.contacts-scroll .contact-pill').forEach(p => {
+                        if (p.id !== 'search-trigger-pill') p.classList.add('hidden');
+                    });
+
+                    data.forEach(user => {
+                        const initial = user.username.charAt(0).toUpperCase();
+                        const accDetail = user.psid || user.phoneNo || 'neo8x000';
+                        
+                        const newPill = document.createElement('div');
+                        newPill.className = 'contact-pill dynamic-pill';
+                        newPill.onclick = function() { selectContact(this) };
+                        newPill.innerHTML = `
+                            <div class="cp-img-wrap" style="background: rgba(79, 70, 229, 0.2);"><div class="cp-img" style="background: transparent; color: var(--primary);">${initial}</div></div>
+                            <span class="cp-name">${user.username}</span>
+                            <span style="display:none;" class="cp-acc">${accDetail}</span>
+                        `;
+                        scrollContainer.appendChild(newPill);
+                    });
+                }
+            } catch(e) {
+                console.error("Search failed", e);
+            }
+        }, 300);
+    }
+
+    // Sidebar Logic
+    function openSidebar() {
+        document.getElementById('sidebar-overlay').classList.add('active');
+        document.getElementById('sidebar').classList.add('active');
+    }
+    
+    function closeSidebar() {
+        document.getElementById('sidebar-overlay').classList.remove('active');
+        document.getElementById('sidebar').classList.remove('active');
+    }
+
+// --- Interactive Logic ---
+    function showModal(id) {
+        document.getElementById(id).classList.add('active');
+    }
+    
+    function closeModalBtn(id) {
+        document.getElementById(id).classList.remove('active');
+    }
+    
+    function closeModal(el, event) {
+        if(event.target === el) {
+            el.classList.remove('active');
+        }
+    }
+    
+    function showGeneric(title, body) {
+        document.getElementById('generic-title').innerText = title;
+        if(body) document.getElementById('generic-body').innerText = body;
+        showModal('generic-modal');
+    }
+
+    function showReceipt(name, amt, cat, time, wrapClass, iconHtml) {
+        document.getElementById('receipt-name').innerText = name;
+        document.getElementById('receipt-amt').innerText = amt;
+        document.getElementById('receipt-amt').className = amt.includes('+') ? 'positive' : '';
+        document.getElementById('receipt-amt').style.color = amt.includes('+') ? 'var(--success)' : 'var(--text-main)';
+        document.getElementById('receipt-cat').innerText = cat;
+        document.getElementById('receipt-time').innerText = time;
+        document.getElementById('receipt-icon-wrap').className = wrapClass;
+        document.getElementById('receipt-icon-wrap').innerHTML = iconHtml;
+        showModal('receipt-modal');
+    }
+
+    // Scanner Logic
+    let scanTimeout;
+    function showScanner() {
+        document.getElementById('scanner-overlay').classList.add('active');
+        // Fake scan success after 3.5 seconds
+        scanTimeout = setTimeout(() => {
+            if(document.getElementById('scanner-overlay').classList.contains('active')) {
+                closeScanner();
+                showGeneric('Scan Successful', 'Detected Payload: neopay:merhant_rx\nAmount: £45.00');
+            }
+        }, 3500);
+    }
+    function closeScanner() {
+        document.getElementById('scanner-overlay').classList.remove('active');
+        clearTimeout(scanTimeout);
+    }
+
+    function toggleNotifications(e) {
+        if(e) e.stopPropagation();
+        const panel = document.getElementById('notifications-panel');
+        const badge = document.getElementById('notif-badge');
+        badge.style.display = 'none'; // clear unread marker
+        
+        if (panel.classList.contains('active')) {
+            panel.classList.remove('active');
+            document.removeEventListener('click', clickAwayHandler);
+        } else {
+            panel.classList.add('active');
+            setTimeout(() => { document.addEventListener('click', clickAwayHandler); }, 10);
+        }
+    }
+
+    function clickAwayHandler(e) {
+        if (!e.target.closest('#notifications-panel')) {
+            document.getElementById('notifications-panel').classList.remove('active');
+            document.removeEventListener('click', clickAwayHandler);
+        }
+    }
+
+    function addNotification(title, message, isSuccess = true) {
+        const list = document.getElementById('notifications-list');
+        const empty = document.getElementById('np-empty');
+        const badge = document.getElementById('notif-badge');
+        
+        if (empty) empty.style.display = 'none';
+        
+        const item = document.createElement('div');
+        item.className = 'np-item ' + (isSuccess ? 'success' : '');
+        item.innerHTML = `
+            <div class="np-icon"><i class="ph-bold ${isSuccess ? 'ph-check' : 'ph-info'}"></i></div>
+            <div class="np-content">
+                <h5>${title}</h5>
+                <p>${message}</p>
+            </div>
+        `;
+        list.prepend(item);
+        badge.style.display = 'block';
+    }
+
+    function clearNotifications() {
+        const list = document.getElementById('notifications-list');
+        list.innerHTML = '<div id="np-empty" class="np-empty">No new notifications</div>';
+    }
+
+    async function mockSend() {
+        const amtStr = document.getElementById('amt-display').innerText;
+        const amtNum = parseFloat(amtStr);
+        let method = 'NeoPay Internal';
+        let account = '';
+        let selectedName = 'Another Person';
+        const selectedPill = document.querySelector('.contact-pill.selected');
+        
+        if (selectedPill) {
+            const pillNameEl = selectedPill.querySelector('.cp-name');
+            selectedName = pillNameEl ? pillNameEl.innerText : 'Another Person';
+            
+            if (selectedName === 'Another Person') {
+                method = document.getElementById('transfer-method').value;
+                account = document.getElementById('transfer-account').value;
+                if (!account) {
+                    showGeneric('Missing Info', 'Please enter the account number, phone no or PSID.');
+                    return;
+                }
+            } else if (selectedName !== 'Search') {
+                const accEl = selectedPill.querySelector('.cp-acc');
+                account = accEl ? accEl.innerText : 'neo8x000';
+            }
+        }
+        
+        // Get current balance
+        const balEl = document.getElementById('main-balance');
+        let currentBalStr = balEl.innerText.replace('$', '').replace(/,/g, '');
+        let currentBal = parseFloat(currentBalStr);
+        
+        if (amtNum === 0) {
+            showGeneric('Invalid Amount', 'Please enter an amount greater than 0.');
+            return;
+        }
+        
+        if (amtNum > currentBal) {
+            showGeneric('Transfer Failed', 'Insufficient funds for this transaction.');
+            return;
+        }
+
+        const sender = document.getElementById('user-name-header').innerText || 'Unknown Sender';
+
+        try {
+            const res = await fetch(`${API_BASE.replace('/auth', '/transactions')}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    sender: sender,
+                    receiverName: selectedName,
+                    transferMethod: method,
+                    accountNumber: account,
+                    amount: amtNum
+                })
+            });
+            const data = await res.json();
+            
+            if(res.ok) {
+                // Deduct
+                currentBal -= amtNum;
+                const formattedBal = '$' + currentBal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                balEl.innerText = formattedBal;
+
+                // Show dynamic generic message as required
+                showGeneric('Transfer Successful', `${data.message}\nNew balance: ${formattedBal}`);
+                
+                // Add Notification
+                addNotification('Transfer Successful', data.message, true);
+                
+                // Reset numpad
+                window.currentAmount = "0";
+                document.getElementById('amt-display').innerText = "0";
+                if(document.getElementById('transfer-account')) {
+                    document.getElementById('transfer-account').value = "";
+                }
+                
+                setTimeout(() => { navTo('home'); }, 2400);
+            } else {
+                showGeneric('Transfer Failed', data.message);
+            }
+        } catch (e) {
+            showGeneric('Server Error', 'Could not process transaction. Is the backend running?');
+        }
+    }
+
+    // Navigation Logic
+    function navTo(pageId, navElement = null) {
+        // Hide all pages
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+        });
+        
+        // Show target page
+        document.getElementById(pageId).classList.add('active');
+        
+        // Update Nav Active State if triggered from bottom nav
+        if (navElement) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            navElement.classList.add('active');
+        } else {
+            // Find the correct nav item and activate it based on pageId
+            const iconMap = {
+                'home': 'ph-house',
+                'cards': 'ph-wallet',
+                'stats': 'ph-chart-pie-slice',
+                'profile': 'ph-user'
+            };
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active');
+                if (el.querySelector(`.${iconMap[pageId]}`)) {
+                    el.classList.add('active');
+                }
+            });
+        }
+
+        // Trigger animations if specific pages are rendered
+        if(pageId === 'stats') renderChart();
+    }
+
+    // Theme Toggle Logic
+    function toggleTheme() {
+        document.body.classList.toggle('light');
+        const icon = document.getElementById('theme-icon');
+        if (document.body.classList.contains('light')) {
+            icon.classList.remove('ph-moon');
+            icon.classList.add('ph-sun');
+        } else {
+            icon.classList.remove('ph-sun');
+            icon.classList.add('ph-moon');
+        }
+    }
+
+    // Send Money Numpad Logic
+    let currentAmount = "150";
+    const amtDisplay = document.getElementById('amt-display');
+
+    function appendNum(num) {
+        if (currentAmount === "0") {
+            currentAmount = num;
+        } else if (currentAmount.length < 5) {
+            currentAmount += num;
+        }
+        amtDisplay.innerText = currentAmount;
+    }
+
+    function backspace() {
+        if (currentAmount.length > 1) {
+            currentAmount = currentAmount.slice(0, -1);
+        } else {
+            currentAmount = "0";
+        }
+        amtDisplay.innerText = currentAmount;
+    }
+
+    // Dynamic Chart Rendering for Stats Page
+    function renderChart() {
+        const container = document.getElementById('bars-container');
+        if(container.innerHTML.trim() !== "") return; // Already rendered
+        
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const heights = [40, 60, 30, 80, 50, 100, 70]; // Percentages
+        
+        let html = '';
+        days.forEach((day, i) => {
+            const isActive = i === 5 ? 'active' : '';
+            html += `
+            <div class="bar-wrap ${isActive}">
+                <div class="bar-track" style="height: 120px;">
+                    <div class="bar-fill" style="height: 0%;" data-height="${heights[i]}%"></div>
+                </div>
+                <span class="bar-day">${day}</span>
+            </div>`;
+        });
+        
+        container.innerHTML = html;
+        
+        // Timeout for entrance animation
+        setTimeout(() => {
+            document.querySelectorAll('.bar-fill').forEach(bar => {
+                bar.style.height = bar.getAttribute('data-height');
+            });
+        }, 100);
+    }
+
+    // AI Chatbot Logic
+    async function sendChatMessage() {
+        const inputEl = document.getElementById('chat-input');
+        const msg = inputEl.value.trim();
+        if (!msg) return;
+
+        const chatBox = document.getElementById('chat-messages');
+        
+        // Add User message
+        const userBubble = document.createElement('div');
+        userBubble.style.cssText = "background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 14px 18px; border-radius: 20px 20px 4px 20px; align-self: flex-end; max-width: 85%; line-height: 1.5; font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);";
+        userBubble.innerText = msg;
+        chatBox.appendChild(userBubble);
+        
+        inputEl.value = '';
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        // Add Loading bubble
+        const loadBubble = document.createElement('div');
+        loadBubble.style.cssText = "background: var(--bg-surface); border: 1px solid var(--border-glass); padding: 14px 18px; border-radius: 20px 20px 20px 4px; align-self: flex-start; max-width: 85%; font-size: 14px; display: flex; gap: 4px;";
+        loadBubble.innerHTML = "<span>.</span><span>.</span><span>.</span>";
+        chatBox.appendChild(loadBubble);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg })
+            });
+            const data = await res.json();
+            
+            chatBox.removeChild(loadBubble);
+            const botBubble = document.createElement('div');
+            botBubble.style.cssText = "background: var(--bg-surface); border: 1px solid var(--border-glass); padding: 14px 18px; border-radius: 20px 20px 20px 4px; align-self: flex-start; max-width: 85%; line-height: 1.5; font-size: 14px;";
+            botBubble.innerText = data.reply || "I didn't quite catch that.";
+            chatBox.appendChild(botBubble);
+        } catch (err) {
+            chatBox.removeChild(loadBubble);
+            const errBubble = document.createElement('div');
+            errBubble.style.cssText = "background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.2); color: var(--accent); padding: 14px 18px; border-radius: 20px 20px 20px 4px; align-self: flex-start; max-width: 85%; line-height: 1.5; font-size: 14px;";
+            errBubble.innerText = "Error connecting to AI Server. Ensure the backend is running.";
+            chatBox.appendChild(errBubble);
+        }
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function clearChat() {
+        if(confirm('Are you sure you want to clear chat history?')) {
+            const chatBox = document.getElementById('chat-messages');
+            chatBox.innerHTML = `
+                <div class="chat-bubble bot" style="background: var(--bg-surface); border: 1px solid var(--border-glass); padding: 14px 18px; border-radius: 20px 20px 20px 4px; align-self: flex-start; max-width: 85%; line-height: 1.5; font-size: 14px;">
+                    Hello! I am your NeoPay AI Assistant. I can help answer questions about your account, transactions, and security. How can I help you today?
+                </div>
+            `;
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  host:     process.env.PG_HOST     || '127.0.0.1',
+  port:     process.env.PG_PORT     || 5432,
+  database: process.env.PG_DATABASE || 'neopay',
+  user:     process.env.PG_USER     || 'postgres',
+  password: process.env.PG_PASSWORD || '',
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+// Create tables if they don't exist
+async function initDB() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id          SERIAL PRIMARY KEY,
+      username    VARCHAR(100) UNIQUE NOT NULL,
+      email       VARCHAR(255) UNIQUE NOT NULL,
+      password    TEXT NOT NULL,
+      is_verified BOOLEAN DEFAULT FALSE,
+      otp         VARCHAR(10),
+      otp_expires TIMESTAMPTZ,
+      phone_no    VARCHAR(50) UNIQUE,
+      psid        VARCHAR(100) UNIQUE,
+      biometric_key TEXT UNIQUE,
+      created_at  TIMESTAMPTZ DEFAULT NOW(),
+      updated_at  TIMESTAMPTZ DEFAULT NOW()
+    );
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS transactions (
+      id              SERIAL PRIMARY KEY,
+      sender          VARCHAR(100) NOT NULL,
+      receiver_name   VARCHAR(100) NOT NULL,
+      transfer_method VARCHAR(50)  NOT NULL,
+      account_number  VARCHAR(100) NOT NULL,
+      amount          NUMERIC(12,2) NOT NULL,
+      created_at      TIMESTAMPTZ DEFAULT NOW()
+    );
+  `);
+
+  console.log('PostgreSQL tables ready');
+}
+
+module.exports = { pool, initDB };
