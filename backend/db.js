@@ -1,14 +1,14 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  host:     process.env.PG_HOST     || '127.0.0.1',
-  port:     process.env.PG_PORT     || 5432,
-  database: process.env.PG_DATABASE || 'neopay',
-  user:     process.env.PG_USER     || 'postgres',
-  password: process.env.PG_PASSWORD || '',
-  ssl: {
+  host:     process.env.PGHOST     || process.env.PG_HOST     || '127.0.0.1',
+  port:     process.env.PGPORT     || process.env.PG_PORT     || 5432,
+  database: process.env.PGDATABASE || process.env.PG_DATABASE || 'neopay',
+  user:     process.env.PGUSER     || process.env.PG_USER     || 'postgres',
+  password: process.env.PGPASSWORD || process.env.PG_PASSWORD || '',
+  ssl: process.env.PGHOST ? {
     rejectUnauthorized: false
-  }
+  } : undefined
 });
 
 // Create tables if they don't exist
