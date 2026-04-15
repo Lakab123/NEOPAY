@@ -1275,7 +1275,13 @@
 
     // --- Auth Logic ---
     // --- API Setup ---
-    const API_BASE = '/api/auth';
+    // 🚀 DEPLOYMENT CONFIGURATION
+    // For local development: Use '/api/auth' (relative path)
+    // For Railway deployment: Your Railway URL
+    const RAILWAY_URL = 'https://desirable-courage-production-5a21.up.railway.app';
+    const USE_RAILWAY = true; // Set to true for production, false for local development
+    
+    const API_BASE = USE_RAILWAY ? `${RAILWAY_URL}/api/auth` : '/api/auth';
     let currentSignupEmail = '';
 
     // --- Screen Toggles ---
