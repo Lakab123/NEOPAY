@@ -188,9 +188,17 @@ app.post('/api/chat', async (req, res) => {
 });
 
 // ── Health Check ─────────────────────────────────────────────────────────────
+// Simple health check that always responds (for Railway)
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
+// Detailed health check with environment info
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
     env: {
       PG_HOST:     !!process.env.PG_HOST     ? '✅ Set' : '⚠️ Using default',
       PG_DATABASE: !!process.env.PG_DATABASE ? '✅ Set' : '⚠️ Using default',
@@ -216,11 +224,21 @@ app.get('/', (req, res) => {
 
 // ── Start Server ─────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
-initDB().then(() => {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}).catch(err => {
-  console.error('Failed to initialize database:', err.message);
-  process.exit(1);
+const HOST = '0.0.0.0'; // Bind to all interfaces for Railway
+
+// Start server first, then initialize database
+app.listen(PORT, HOST, () => {
+  console.log(`Server running on ${HOST}:${PORT}`);
+  console.log(`Health check available at: http://localhost:${PORT}/health`);
+  
+  // Initialize database after server starts
+  initDB()
+    .then(() => console.log('✅ Database initialized successfully'))
+    .catch(err => {
+      console.error('⚠️ Database initialization failed:', err.message);
+      console.error('Server is running but database operations may fail');
+      // Don't exit - let the server run for health checks
+    });
 });
 
 module.exports = app;
